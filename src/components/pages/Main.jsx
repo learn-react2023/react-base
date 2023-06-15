@@ -1,20 +1,26 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { changeViewType, changeValue, changeComment } from '../../redux-state/reducers/view-type-for-main'
-import { useSelector, useDispatch } from 'react-redux';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
+import { useSelector, useDispatch } from 'react-redux'
+import FooterContext from '../../redux-state/context/footerContext'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormControl from '@mui/material/FormControl'
+import FormLabel from '@mui/material/FormLabel'
 import Foot from '../views/global/Foot'
 import InputComponent from '../comps/Input'
 import css from '../../styles/form.css'
 
-const { FormContainer, Button } = css
+import { useRef } from 'react'
+
+const { FormContainer, Button, Input } = css
 
 const Main = (props) => {
 
   const { action } = props
+
+  const firstInput = useRef()
+  const [ footerText, ] = useState('Курс по основам ReactJS')
 
   const dispatch = useDispatch()
   const viewType = useSelector(state => state.viewTypeMain.viewType)
@@ -49,12 +55,43 @@ const Main = (props) => {
     dispatch(changeComment(event.target.value))
   }
 
+  const setFocus = () => firstInput.current.focus()
+
   useEffect(() => { console.log(viewType) }, [viewType])
 
   return (
     <React.Fragment>
       <FormContainer style={{ alignItems: 'flex-start' }}>
-        <InputComponent inputValue={viewValue} action={handleChangeValue} placeholder={"Введите сумму транзакции"}/>
+
+        {/* ----------------------------------------- */}
+        {/* react useRef */}
+        {/* ----------------------------------------- */}
+        
+        <Button 
+          backgroundColor={"rgb(176, 243, 71)"}
+          onClick={setFocus}
+          style={{ marginBottom: '12px' }}
+        >
+          Начать заполнение
+        </Button>
+        <Input
+          ref={firstInput}
+          value={viewValue}
+          type={"text"}
+          placeholder={"Введите сумму транзакции"}
+          maxLength={"100"}
+          onChange={event => {
+            const newValue = event.target.value
+            handleChangeValue(newValue)
+          }}
+        />
+
+        {/* ----------------------------------------- */}
+        {/* react useRef */}
+        {/* ----------------------------------------- */}
+        
+        { false && <InputComponent ref={firstInput} inputValue={viewValue} action={handleChangeValue} placeholder={"Введите сумму транзакции"}/> }
+        
         <FormControl style={{ marginTop: '9px', marginBottom: '12px' }}>
           <FormLabel id="demo-controlled-radio-buttons-group">Выберите тип транзакции</FormLabel>
           <RadioGroup
@@ -97,7 +134,18 @@ const Main = (props) => {
           onClick={validation}
         >Сохранить транзакцию</Button>
       </FormContainer>
-      <Foot></Foot>
+      { false && <FooterContext.Provider value={footerText}>
+        
+        <Foot></Foot>
+      
+      </FooterContext.Provider> }
+      { true && <FooterContext.Provider value={footerText}>
+        <FooterContext.Consumer>
+
+          { value => <Foot>{ value }</Foot> }
+
+        </FooterContext.Consumer>
+      </FooterContext.Provider> }
     </React.Fragment>
   )
 }
