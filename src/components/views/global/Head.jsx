@@ -31,6 +31,18 @@ const Head = () => {
           >
             Планирование
           </HOCButtonComponent>
+          <HOCButtonComponent 
+            text={'/main'} 
+            onClick={ async () => {
+              await fetch('/clear-data', {
+                method: 'POST',
+                headers: { "Content-type": "application/json; charset=UTF-8" }
+              })
+              window.location.reload()
+            }}
+          >
+            Сброс данных
+          </HOCButtonComponent>
         </HeaderCSS.MenuContainer>
       </HeaderContainer>
     </React.Fragment>

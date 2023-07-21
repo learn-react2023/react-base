@@ -12,6 +12,7 @@ import InputComponent from '../comps/Input'
 import css from '../../styles/form.css'
 
 import { useRef } from 'react'
+import useNumberValueFormat from '../../hooks/useNumberValueFormat'
 
 const { FormContainer, Button, Input } = css
 
@@ -19,8 +20,9 @@ const Main = (props) => {
 
   const { action } = props
 
-  const firstInput = useRef()
-  const [ footerText, ] = useState('Курс по основам ReactJS')
+  const valueInput = useRef()
+  const [ footerText, setFooterText ] = useState('Новый курс по основам ReactJS 2023')
+  const [ formatValue, formating ] = useNumberValueFormat()
 
   const dispatch = useDispatch()
   const viewType = useSelector(state => state.viewTypeMain.viewType)
@@ -28,16 +30,24 @@ const Main = (props) => {
   const viewComment = useSelector(state => state.viewTypeMain.comment)
 
   const validation = () => {
-    if ( viewValue.length > 2 && viewType ) {
+    if ( formatValue.length > 2 && viewType ) {
       console.log('валидация прошла успешно')
 
-      const dataLine = `${viewValue}::${viewType}::${viewComment}`
+      const dataLine = `${formatValue}::${viewType}::${viewComment}`
 
       action(dataLine)
 
       dispatch(changeValue(''))
       dispatch(changeViewType('доход'))
       dispatch(changeComment(''))
+
+      fetch('/add-data', {
+        method: 'POST',
+        headers: { "Content-type": "application/json; charset=UTF-8" }, 
+        body: JSON.stringify({
+          value: dataLine
+        })
+      })
 
     } else console.log('ошибка валидации')
   }
@@ -55,9 +65,13 @@ const Main = (props) => {
     dispatch(changeComment(event.target.value))
   }
 
-  const setFocus = () => firstInput.current.focus()
+  const setFocus = () => { 
+    valueInput.current.disabled = false
+    valueInput.current.focus()
+  }
 
   useEffect(() => { console.log(viewType) }, [viewType])
+  useEffect(() => { console.log(formatValue) }, [formatValue])
 
   return (
     <React.Fragment>
@@ -75,13 +89,15 @@ const Main = (props) => {
           Начать заполнение
         </Button>
         <Input
-          ref={firstInput}
+          ref={valueInput}
           value={viewValue}
           type={"text"}
           placeholder={"Введите сумму транзакции"}
           maxLength={"100"}
+          disabled
           onChange={event => {
             const newValue = event.target.value
+            formating(newValue)
             handleChangeValue(newValue)
           }}
         />
@@ -90,7 +106,7 @@ const Main = (props) => {
         {/* react useRef */}
         {/* ----------------------------------------- */}
         
-        { false && <InputComponent ref={firstInput} inputValue={viewValue} action={handleChangeValue} placeholder={"Введите сумму транзакции"}/> }
+        { false && <InputComponent ref={valueInput} inputValue={viewValue} action={handleChangeValue} placeholder={"Введите сумму транзакции"}/> }
         
         <FormControl style={{ marginTop: '9px', marginBottom: '12px' }}>
           <FormLabel id="demo-controlled-radio-buttons-group">Выберите тип транзакции</FormLabel>
@@ -134,12 +150,12 @@ const Main = (props) => {
           onClick={validation}
         >Сохранить транзакцию</Button>
       </FormContainer>
-      { false && <FooterContext.Provider value={footerText}>
+      { true && <FooterContext.Provider value={[ footerText, setFooterText ]}>
         
         <Foot></Foot>
       
       </FooterContext.Provider> }
-      { true && <FooterContext.Provider value={footerText}>
+      { false && <FooterContext.Provider value={footerText}>
         <FooterContext.Consumer>
 
           { value => <Foot>{ value }</Foot> }

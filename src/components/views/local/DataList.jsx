@@ -1,20 +1,34 @@
-import React from "react"
+import React, { useState, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 import css from '../../../styles/dataList.css'
 
 const { DataContainer, ContentLine, ContentCell, ButtonsLine, ButtonItem  } = css
 
-const DataList = (props) => {
+const dataSumm = (paramData, view) => {
 
-  const { data = [], setShow, viewType } = props
-  const navigate = useNavigate()
-  const filterData = data.filter(item => item.split('::')[1] === viewType)
-  const filterDataSumm = data.filter(item => item.split('::')[1] === viewType)
+  const returned = paramData.filter(item => item.split('::')[1] === view)
     .reduce((summ, item) => {
 
       return summ + +(item.split('::')[0].split(' ')[0] + item.split('::')[0].split(' ')[1])
 
     }, 0)
+
+  console.log('посчитана сумма')
+  console.log(returned)
+  return returned
+
+}
+
+const DataList = (props) => {
+
+  const { data = [], setShow, viewType } = props
+  const navigate = useNavigate()
+  const [ bold, setBold ] = useState(false)
+  const filterData = data.filter(item => item.split('::')[1] === viewType)
+  const filterDataSumm = useMemo(() => dataSumm(data, viewType), [ data, viewType ])
+  // ----------------------------------------------------------------
+  // const filterDataSumm = useCallback(() => dataSumm(data, viewType), [ data, viewType ])
+  // ----------------------------------------------------------------
   const filterDataDelta = data
     .reduce((summ, item) => {
 
@@ -35,6 +49,10 @@ const DataList = (props) => {
     setShow(true)
   }
   const reduceDataType3 = () => navigate('/stat/общее')
+
+  // ----------------------------------------------------------------
+  // useEffect(() => { filterDataSumm() }, [ filterDataSumm ])
+  // ----------------------------------------------------------------
 
   return (
     <React.Fragment>
@@ -57,7 +75,7 @@ const DataList = (props) => {
 
           })}
           <ContentLine>
-            <ContentCell width={"20%"}>{ filterDataSumm }</ContentCell>
+            <ContentCell onClick={() => setBold(!bold)} style={{ fontWeight: bold && 'bold' }} width={"20%"}>{ filterDataSumm }</ContentCell>
             <ContentCell width={"20%"}></ContentCell>
             <ContentCell width={"60%"}></ContentCell>
           </ContentLine>

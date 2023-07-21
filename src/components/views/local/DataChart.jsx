@@ -1,3 +1,6 @@
+// ----------------------------------------------------------------
+/* eslint-disable react-hooks/exhaustive-deps */
+// ----------------------------------------------------------------
 import React, { useEffect, useState } from "react"
 import css from '../../../styles/dataList.css'
 import { ResponsivePie } from '@nivo/pie'

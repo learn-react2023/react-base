@@ -16,7 +16,20 @@ function App() {
 
   const setData = (param) => dispatch(setDataFromRedux(param))
 
-  useEffect(() => console.log(data), [ data ])
+  useEffect(() => {
+
+    ( async () => {
+
+      const data = await fetch('/get-data', {
+        method: 'POST',
+        headers: { "Content-type": "application/json; charset=UTF-8" }
+      }).then(response => response.json())
+
+      data.data.forEach(item => dispatch(setDataFromRedux(item)))
+
+    })()
+
+  }, [ dispatch ])
 
   return (
     <React.Fragment>

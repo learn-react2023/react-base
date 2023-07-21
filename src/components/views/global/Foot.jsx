@@ -1,17 +1,25 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import css from '../../../styles/styles.css'
-import FooterContext from '../../../redux-state/context/footerContext'
+// ----------------------------------------------------------------
+// import FooterContext from '../../../redux-state/context/footerContext'
+// ----------------------------------------------------------------
 
 const { FooterContainer } = css
 
 const Foot = ({ children }) => {
 
   // eslint-disable-next-line no-unused-vars
-  const footerText = useContext(FooterContext)
+  // const [ footerText, setFooterText ] = useContext(FooterContext)
 
   return (
     <React.Fragment>
-      <FooterContainer style={{ justifyContent: 'space-around', fontSize: '14px' }}>{ children }</FooterContainer>
+      {/* <FooterContainer 
+            onClick={() => setFooterText('Новый текст для подвала приложения')} 
+            style={{ justifyContent: 'space-around', fontSize: '14px' }}
+          >
+            { footerText }
+          </FooterContainer> */}
+      <FooterContainer style={{ justifyContent: 'space-around', fontSize: '14px' }}></FooterContainer>
     </React.Fragment>
   )
 }
