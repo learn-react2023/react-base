@@ -23,10 +23,15 @@
         transition: all 300ms;
         font-family: 'Roboto', sans-serif;
       }
+      body {
+        overflow: hidden;
+      }
     </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div style="overflow-y: scroll; display: block; width: calc(100% + 30px); height: 100vh; padding-right: 12px;">
+      <div id="root"></div>
+    </div>
   </body>
 </html>
